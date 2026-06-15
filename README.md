@@ -69,6 +69,11 @@ cp -R "$PLAYBOOK/templates/docs" ./docs
 反映される(既存セッションは `/compact` で読み直す)。チームで内容を共有しておくと、誰が書いても
 出力の方向性が揃い、このプレイブックの効果も上がる。
 
+配置場所や読み込みの仕様は各エージェントの公式ドキュメントを参照。
+
+- [Claude があなたのプロジェクトを記憶する方法 — Claude Code Docs](https://code.claude.com/docs/ja/memory)
+- [Custom instructions with AGENTS.md — Codex / OpenAI Developers](https://developers.openai.com/codex/guides/agents-md)
+
 ### コードスタイルの参考
 
 グローバル `CLAUDE.md` の一例。これをベースに各チーム・各自で調整するとよい。
