@@ -5,8 +5,9 @@
 
 ## 全体像
 
-- 知識ファイルを **書くのはAIエージェント**(Claude Code)。作業の中で更新する。
-- **人間は差分のレビューと承認** を担う。自分でゼロから書く必要はない。
+- 知識ファイルを **書くのはAIエージェント**(Claude Code)。作業の中で自動で更新する。
+- **人間がやるのはタスクの着手と、終わったあとのレビュー・承認だけ**。
+  どの知識をどこに書くかは考えなくてよい(`CLAUDE.md` の設定でエージェントが自動判断する)。
 - エージェントが従う規範はリポジトリルートの `CLAUDE.md` に集約されている。
   このREADMEは、その運用を人間が理解・運用するための解説。
   運用ルール(knowledge.md / ADR の扱い)を変えるときは、規範の `CLAUDE.md` と
@@ -14,47 +15,6 @@
 
 知識を中央のドキュメントツールに切り出さず、コードと同じGitリポジトリに置くのが方針。
 コードを読むエージェントが知識へ自然に辿り着け、レビューもPRの中で完結する。
-
-## 知識が蓄積されるサイクル
-
-タスクをこなすたびに知識が貯まり、それが次のタスクの入力に還る。
-
-```mermaid
-flowchart LR
-  start([タスク着手])
-  read[既存知識を読む<br/>knowledge.md / 関連ADR]
-  work[タスクを実行<br/>新しい知見・判断が出る]
-  sort{知見の種類}
-
-  subgraph update[知識の更新]
-    direction TB
-    kn[knowledge.md<br/>運用知識を最新状態に更新]
-    adr[ADR<br/>設計判断を連番で追記<br/>過去の決定も残す]
-  end
-
-  propose[エージェントが<br/>差分を自動提案]
-  review([人がレビュー<br/>承認してコミット])
-
-  start --> read --> work --> sort
-  sort -->|運用知識| kn
-  sort -->|設計判断| adr
-  kn --> propose
-  adr --> propose
-  propose --> review
-  review -.次のタスクの入力に還る.-> read
-
-  classDef agent fill:#E1F5EE,stroke:#0F6E56,color:#04342C;
-  classDef human fill:#E6F1FB,stroke:#185FA5,color:#042C53;
-  classDef kfile fill:#EEEDFE,stroke:#534AB7,color:#26215C;
-  classDef afile fill:#FAECE7,stroke:#993C1D,color:#4A1B0C;
-  classDef group fill:#F7F7F7,stroke:#CCCCCC,color:#222222;
-
-  class read,work,sort,propose agent;
-  class start,review human;
-  class kn kfile;
-  class adr afile;
-  class update group;
-```
 
 ## ファイルの場所と役割
 
@@ -100,15 +60,54 @@ flowchart LR
 
 ## 運用の流れ
 
-新しく参加した人がやることは、実質これだけ。
+**人間がやることは2つだけ。** タスクをエージェントに着手させること、そして終わったあとに
+提案された差分をレビューして承認すること。それ以外は何も考えなくてよい。
 
-1. **作業前** — エージェントは `docs/knowledge.md` と関連ADRを読んでから着手する。
-   人間も、そのプロジェクトの前提を掴みたいときはこの2つを読む。
-2. **作業中・完了時** — エージェントが知識やADRの更新差分を提案する。
-3. **レビュー** — 人間が差分を確認する。事実誤認やノイズがあれば修正させてからコミットする。
-   ADRはコミットすると本文が確定する(以後は書き換えない)ので、レビューはコミット前に行う。
+あいだの知識の蓄積 — 既存の knowledge.md / ADR を読む、得た知見を仕分ける、knowledge.md を
+更新する、ADR を起こす、差分を提案する — は **すべて `CLAUDE.md` に書かれた設定に従って
+エージェントが自動で行う**。人間が「この知識はどこに書くべきか」「ADRを起こすべきか」を
+判断する必要はない。下図の緑のステップはすべて自動で進む。
 
-書く負担がないので知識蓄積が形骸化しない。レビューだけ怠らなければ仕組みは回る。
+```mermaid
+flowchart LR
+  start([タスク着手])
+  read[既存知識を読む<br/>knowledge.md / 関連ADR]
+  work[タスクを実行<br/>新しい知見・判断が出る]
+  sort{知見の種類}
+
+  subgraph update[知識の更新]
+    direction TB
+    kn[knowledge.md<br/>運用知識を最新状態に更新]
+    adr[ADR<br/>設計判断を連番で追記<br/>過去の決定も残す]
+  end
+
+  propose[エージェントが<br/>差分を自動提案]
+  review([人がレビュー<br/>承認してコミット])
+
+  start --> read --> work --> sort
+  sort -->|運用知識| kn
+  sort -->|設計判断| adr
+  kn --> propose
+  adr --> propose
+  propose --> review
+  review -.次のタスクの入力に還る.-> read
+
+  classDef agent fill:#E1F5EE,stroke:#0F6E56,color:#04342C;
+  classDef human fill:#E6F1FB,stroke:#185FA5,color:#042C53;
+  classDef kfile fill:#EEEDFE,stroke:#534AB7,color:#26215C;
+  classDef afile fill:#FAECE7,stroke:#993C1D,color:#4A1B0C;
+  classDef group fill:#F7F7F7,stroke:#CCCCCC,color:#222222;
+
+  class read,work,sort,propose agent;
+  class start,review human;
+  class kn kfile;
+  class adr afile;
+  class update group;
+```
+
+青があなた(人間)、緑がエージェントの自動処理。あなたは両端の青いステップだけを担当する。
+レビューはコミット前に行う(特にADRはコミットすると本文が確定し、以後は書き換えないため)。
+書く負担がないので、レビューさえ怠らなければ知識は勝手に貯まり続ける。
 
 ## オプション: Codex など他エージェントからも参照する
 
