@@ -15,6 +15,47 @@
 知識を中央のドキュメントツールに切り出さず、コードと同じGitリポジトリに置くのが方針。
 コードを読むエージェントが知識へ自然に辿り着け、レビューもPRの中で完結する。
 
+## 知識が蓄積されるサイクル
+
+タスクをこなすたびに知識が貯まり、それが次のタスクの入力に還る。
+
+```mermaid
+flowchart LR
+  start([タスク着手])
+  read[既存知識を読む<br/>knowledge.md / 関連ADR]
+  work[タスクを実行<br/>新しい知見・判断が出る]
+  sort{知見の種類}
+
+  subgraph update[知識の更新]
+    direction TB
+    kn[knowledge.md<br/>運用知識を最新状態に更新]
+    adr[ADR<br/>設計判断を連番で追記<br/>過去の決定も残す]
+  end
+
+  propose[エージェントが<br/>差分を自動提案]
+  review([人がレビュー<br/>承認してコミット])
+
+  start --> read --> work --> sort
+  sort -->|運用知識| kn
+  sort -->|設計判断| adr
+  kn --> propose
+  adr --> propose
+  propose --> review
+  review -.次のタスクの入力に還る.-> read
+
+  classDef agent fill:#E1F5EE,stroke:#0F6E56,color:#04342C;
+  classDef human fill:#E6F1FB,stroke:#185FA5,color:#042C53;
+  classDef kfile fill:#EEEDFE,stroke:#534AB7,color:#26215C;
+  classDef afile fill:#FAECE7,stroke:#993C1D,color:#4A1B0C;
+  classDef group fill:#F7F7F7,stroke:#CCCCCC,color:#222222;
+
+  class read,work,sort,propose agent;
+  class start,review human;
+  class kn kfile;
+  class adr afile;
+  class update group;
+```
+
 ## ファイルの場所と役割
 
 | ファイル | 役割 |
