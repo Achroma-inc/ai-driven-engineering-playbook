@@ -37,13 +37,13 @@ templates/
 まずこのテンプレート集をクローンする(初回のみ)。
 
 ```bash
-git clone https://github.com/Achroma-inc/ai-work-playbook.git ~/開発/ai-work-playbook
+git clone https://github.com/Achroma-inc/ai-work-playbook.git ~/Downloads/ai-work-playbook
 ```
 
 新しいプロジェクトで知識蓄積を始めるとき、そのプロジェクトのリポジトリのルートで以下を実行する。
 
 ```bash
-PLAYBOOK=~/開発/ai-work-playbook
+PLAYBOOK=~/Downloads/ai-work-playbook
 
 # 正本をコピー(Claude Code が読む)
 cp "$PLAYBOOK/templates/CLAUDE.md" ./CLAUDE.md
