@@ -9,9 +9,11 @@ AIドリブンでチーム開発を行うための、組織共通のテンプレ
 ## 思想
 
 - **知識はコードと同じ場所(Git)に置く** — プロジェクトのリポジトリ内に知識を残すことで、
-  コードを読むエージェントが自然に知識へ辿り着ける。中央集約サーバーは作らない。
+  コードを読むエージェントが自然に知識へ辿り着ける。中央集約はしない。
 - **人が一から書かない** — 知識ファイルはAIエージェントが作業の中で更新する。
   人はその差分をレビューして承認するだけ。書く負担がないので腐らない。
+- **ADRは人が指示して残す** — knowledge.md と違い、ADR は設計などが固まったタイミングで
+  人が明示的に指示して更新する。エージェントが自走で書き散らさず、意思決定が定まった節目だけ記録する。
 - **エージェント中立** — 正本は `CLAUDE.md` だが、`AGENTS.md` のsymlinkを張ることで
   Codexなど他のコーディングエージェントからも同じ知識を参照できる。
 
@@ -32,14 +34,19 @@ templates/
 
 ## 使い方
 
-新しいプロジェクトで知識蓄積を始めるとき、リポジトリのルートで以下を実行する。
+まずこのテンプレート集をクローンする(初回のみ)。
+
+```bash
+git clone https://github.com/Achroma-inc/ai-work-playbook.git ~/開発/ai-work-playbook
+```
+
+新しいプロジェクトで知識蓄積を始めるとき、そのプロジェクトのリポジトリのルートで以下を実行する。
 
 ```bash
 PLAYBOOK=~/開発/ai-work-playbook
 
-# 正本をコピーし、AGENTS.md をsymlinkで同一実体にする(Codex等が読む)
+# 正本をコピー(Claude Code が読む)
 cp "$PLAYBOOK/templates/CLAUDE.md" ./CLAUDE.md
-ln -s CLAUDE.md AGENTS.md
 
 # 案件固有知識の雛形
 cp "$PLAYBOOK/templates/knowledge.md" ./knowledge.md
@@ -56,4 +63,17 @@ cp "$PLAYBOOK/templates/adr/0000-template.md" docs/adr/
 
 - **Claude Code(デスクトップ)** — 前提とする環境。`CLAUDE.md` を自動で読み込む。
 - **Claude Code CLI** — 同じく `CLAUDE.md` を読む。追加設定は不要。
-- **Codex / その他** — `AGENTS.md` を読むエージェントは、上記のsymlinkにより同じ内容を参照できる。
+- **Codex / その他** — `AGENTS.md` を読むエージェントは、symlinkを張れば同じ内容を参照できる(オプション。下記参照)。
+
+## オプション
+
+### Codex など他エージェントからも参照する
+
+`AGENTS.md` を読むエージェント(Codex 等)も併用したい場合は、正本の `CLAUDE.md` に
+symlinkを張って同一実体にしておくと、同じ知識を参照できる。基本フローには含めないので、
+必要なプロジェクトでだけ実行する。
+
+```bash
+# CLAUDE.md を正本として AGENTS.md をsymlinkで同一実体にする
+ln -s CLAUDE.md AGENTS.md
+```
