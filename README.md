@@ -13,7 +13,7 @@ AIドリブンでチーム開発を行うための、組織共通のテンプレ
 templates/
 ├── CLAUDE.md            各プロジェクトのルートに置く正本。AI向けの運用規範
 └── docs/
-    ├── README.md        AIドリブン開発プレイブック(導入後はこれを読めば運用できる)
+    ├── README.md        AI-Driven Engineering Playbook(導入後はこれを読めば運用できる)
     ├── knowledge.md     案件固有のドメイン知識を蓄積する雛形
     └── adr/
         └── 0000-template.md   設計意思決定記録(ADR)の雛形
